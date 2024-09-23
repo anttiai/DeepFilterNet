@@ -411,10 +411,6 @@ impl Plugin for DfPlugin {
             let i_q = &mut self.i_tx.lock().unwrap();
             for (i_ch, i_q_ch) in inputs.iter().zip(i_q.iter_mut()) {
                 for &i in i_ch.iter() {
-                    log::warn!(
-                        "-- INQUE LEGTH {}",
-                        i_q_ch.len()
-                    );
                     i_q_ch.push_back(i)
                 }
             }
@@ -426,10 +422,6 @@ impl Plugin for DfPlugin {
                 if o_q[0].len() >= sample_count {
                     for (o_q_ch, o_ch) in o_q.iter_mut().zip(outputs.iter_mut()) {
                         for o in o_ch.iter_mut() {
-                            log::warn!(
-                                "-- OUTQUE LEGTH {}",
-                                o_q_ch.len()
-                            );
                             *o = o_q_ch.pop_front().unwrap();
                         }
                     }
@@ -456,16 +448,16 @@ impl Plugin for DfPlugin {
             }
             self.proc_delay += self.frame_size;
             self.t_proc_change = 0;
-            log::info!(
+            log::warn!(
                 "DF {} | Increasing processing latency to {:.1}ms",
                 self.id,
                 self.proc_delay as f32 * 1000. / self.sr as f32
             );
-            for o_ch in self.o_rx.lock().unwrap().iter_mut() {
+            /*for o_ch in self.o_rx.lock().unwrap().iter_mut() {
                 for _ in 0..self.frame_size {
                     o_ch.push_back(0f32)
                 }
-            }
+            }*/
         } else if self.t_proc_change > 10 * self.sr / self.frame_size
             && rtf < 0.5
             && self.proc_delay
