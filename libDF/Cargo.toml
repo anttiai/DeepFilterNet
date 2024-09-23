@@ -7,7 +7,7 @@ description = "Noise supression using deep filtering"
 repository = "https://github.com/Rikorose/DeepFilterNet"
 license = "MIT/Apache-2.0"
 readme = "../README.md"
-rust-version = "1.60"
+rust-version = "1.70"
 
 [lib]
 name = "df"
@@ -120,10 +120,10 @@ claxon = { version = "^0.4", optional = true }
 env_logger = { version = "0.11", optional = true }
 clap = { version = "4.0", optional = true, features = ["derive"] }
 rust-ini = { version = "^0.21", optional = true }
-tract-core = { version = "^0.21.0", optional = true }
-tract-onnx = { version = "^0.21.0", optional = true }
-tract-pulse = { version = "^0.21.0", optional = true }
-tract-hir = { version = "^0.21.0", optional = true }
+tract-core = { version = "^0.21.4", optional = true }
+tract-onnx = { version = "^0.21.4", optional = true }
+tract-pulse = { version = "^0.21.4", optional = true }
+tract-hir = { version = "^0.21.4", optional = true }
 flate2 = { version = "1.0.24", optional = true }
 tar = { version = "0.4.38", optional = true }
 wasm-bindgen = { version = "0.2.87", optional = true }
@@ -137,7 +137,7 @@ jemallocator = { version = "0.5.0", optional = true }
 
 [dev-dependencies]
 rand = "0.8"
-rstest = "0.18"
+rstest = "0.19"
 env_logger = "0.11"
 log = { version = "0.4", features = ["std"] }
 
