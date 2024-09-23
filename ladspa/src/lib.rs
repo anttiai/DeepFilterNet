@@ -409,6 +409,10 @@ impl Plugin for DfPlugin {
 
         {
             let i_q = &mut self.i_tx.lock().unwrap();
+            log::warn!(
+                "-- INQUE LEGTH {}",
+                i_q.len()
+            );
             for (i_ch, i_q_ch) in inputs.iter().zip(i_q.iter_mut()) {
                 for &i in i_ch.iter() {
                     i_q_ch.push_back(i)
@@ -419,6 +423,10 @@ impl Plugin for DfPlugin {
         'outer: loop {
             {
                 let o_q = &mut self.o_rx.lock().unwrap();
+                log::warn!(
+                    "-- OUTQUE LEGTH {}",
+                    o_q.len()
+                );
                 if o_q[0].len() >= sample_count {
                     for (o_q_ch, o_ch) in o_q.iter_mut().zip(outputs.iter_mut()) {
                         for o in o_ch.iter_mut() {
@@ -446,7 +454,7 @@ impl Plugin for DfPlugin {
                     self.id,
                 );
             }
-            //self.proc_delay += self.frame_size;
+            self.proc_delay += self.frame_size;
             self.t_proc_change = 0;
             log::info!(
                 "DF {} | Increasing processing latency to {:.1}ms",
@@ -476,7 +484,7 @@ impl Plugin for DfPlugin {
                 }
             };
             if dropped_samples {
-                //self.proc_delay -= self.frame_size;
+                self.proc_delay -= self.frame_size;
                 self.t_proc_change = 0;
                 log::info!(
                     "DF {} | Decreasing processing latency to {:.1}ms",
