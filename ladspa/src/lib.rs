@@ -440,20 +440,20 @@ impl Plugin for DfPlugin {
                 self.id,
                 rtf
             );
-            if self.proc_delay >= self.sr {
+            /*if self.proc_delay >= self.sr {
                 panic!(
                     "DF {} | Processing too slow! Please upgrade your CPU. Try to decrease 'Max DF processing threshold (dB)'.",
                     self.id,
                 );
-            }
+            }*/
             self.proc_delay += self.frame_size;
             self.t_proc_change = 0;
-            log::warn!(
+            /*log::warn!(
                 "DF {} | Increasing processing latency to {:.1}ms",
                 self.id,
                 self.proc_delay as f32 * 1000. / self.sr as f32
             );
-            /*for o_ch in self.o_rx.lock().unwrap().iter_mut() {
+            for o_ch in self.o_rx.lock().unwrap().iter_mut() {
                 for _ in 0..self.frame_size {
                     o_ch.push_back(0f32)
                 }
@@ -471,6 +471,10 @@ impl Plugin for DfPlugin {
                 } else {
                     for o_q_ch in o_q.iter_mut().take(self.frame_size) {
                         o_q_ch.pop_front().unwrap();
+                        log::warn!(
+                            "DF {} | Dropped frame!",
+                            self.id
+                        );
                     }
                     true
                 }
