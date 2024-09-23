@@ -446,7 +446,7 @@ impl Plugin for DfPlugin {
                     self.id,
                 );
             }
-            self.proc_delay += self.frame_size;
+            //self.proc_delay += self.frame_size;
             self.t_proc_change = 0;
             log::info!(
                 "DF {} | Increasing processing latency to {:.1}ms",
@@ -476,7 +476,7 @@ impl Plugin for DfPlugin {
                 }
             };
             if dropped_samples {
-                self.proc_delay -= self.frame_size;
+                //self.proc_delay -= self.frame_size;
                 self.t_proc_change = 0;
                 log::info!(
                     "DF {} | Decreasing processing latency to {:.1}ms",
