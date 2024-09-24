@@ -305,7 +305,7 @@ impl Default for DfControlHistory {
             pf_beta: 0.0,
             min_thresh_db: -10.,
             max_erb_thresh_db: 30.,
-            max_df_thresh_db: 20.,
+            max_df_thresh_db: 18.,
             min_buffer_frames: 0.,
         }
     }
