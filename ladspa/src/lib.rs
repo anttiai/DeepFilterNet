@@ -435,11 +435,13 @@ impl Plugin for DfPlugin {
         let t_audio = sample_count as f32 / self.sr as f32;
         let rtf = td.as_secs_f32() / t_audio;
         if rtf >= 1. {
-            log::warn!(
-                "DF {} | Underrun detected (RTF: {:.2}). Processing too slow!",
-                self.id,
-                rtf
-            );
+            if rtf >= 1.3 {
+                log::warn!(
+                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow!",
+                    self.id,
+                    rtf
+                );
+            }
             /*if self.proc_delay >= self.sr {
                 panic!(
                     "DF {} | Processing too slow! Please upgrade your CPU. Try to decrease 'Max DF processing threshold (dB)'.",
