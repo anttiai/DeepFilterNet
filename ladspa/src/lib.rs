@@ -442,33 +442,44 @@ impl Plugin for DfPlugin {
                     rtf
                 );
             }
-
-            //self.proc_delay += self.frame_size;
-            self.t_proc_change = 0;
-
-            let dropped = {
-                let o_q = &mut self.o_rx.lock().unwrap();
-                if o_q[0].len() >= self.frame_size {
-                    for o_ch in o_q.iter_mut() {
-                        for _ in 0..self.frame_size {
-                            o_ch.pop_front(); // Drop oldest samples
-                        }
-                    }
-                    true
-                } else {
-                    false
-                }
-            };
-            if dropped {
-                log::warn!(
-                    "DF {} | Dropped {} samples to recover from underrun (RTF: {:.2})",
+            /*if self.proc_delay >= self.sr {
+                panic!(
+                    "DF {} | Processing too slow! Please upgrade your CPU. Try to decrease 'Max DF processing threshold (dB)'.",
                     self.id,
-                    self.frame_size,
-                    rtf
+                );
+            }*/
+
+            // Empty the queue to avoid underruns
+            if self.proc_delay >= self.sr {
+                log::warn!(
+                    "DF {} | Processing too slow! Emptying output queue to avoid underruns.",
+                    self.id
+                );
+                let mut o_q = self.o_rx.lock().unwrap();
+                for o_q_ch in o_q.iter_mut() {
+                    while o_q_ch.len() > self.frame_size {
+                        o_q_ch.pop_front().unwrap();
+                    }
+                }
+                log::warn!(
+                    "DF {} | Output queue emptied. Processing latency: {:.1}ms",
+                    self.id,
+                    self.proc_delay as f32 * 1000. / self.sr as f32
                 );
             }
 
-
+            //self.proc_delay += self.frame_size;
+            self.t_proc_change = 0;
+            /*log::warn!(
+                "DF {} | Increasing processing latency to {:.1}ms",
+                self.id,
+                self.proc_delay as f32 * 1000. / self.sr as f32
+            );
+            for o_ch in self.o_rx.lock().unwrap().iter_mut() {
+                for _ in 0..self.frame_size {
+                    o_ch.push_back(0f32)
+                }
+            }*/
         } else if self.t_proc_change > 10 * self.sr / self.frame_size
             && rtf < 0.5
             && self.proc_delay
