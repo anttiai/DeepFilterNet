@@ -437,9 +437,11 @@ impl Plugin for DfPlugin {
         if rtf >= 1. {
             if rtf >= 1.3 {
                 log::warn!(
-                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow!",
+                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow, queue length: {} frames vs frame size {}",
                     self.id,
-                    rtf
+                    rtf,
+                    self.o_rx.lock().unwrap()[0].len(),
+                    self.frame_size
                 );
             }
             /*if self.proc_delay >= self.sr {
