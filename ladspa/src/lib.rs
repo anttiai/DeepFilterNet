@@ -437,10 +437,10 @@ impl Plugin for DfPlugin {
         if rtf >= 1. {
             if rtf >= 1.3 {
                 log::warn!(
-                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow. td = {:.1}ms, sample_count = {}, sr = {}, t_audio = {}, proc_delay = {}",
+                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow. t0 = {:.1}ms, sr = {}, t_audio = {}, proc_delay = {}",
                     self.id,
                     rtf,
-                    ts.as_millis_f32(),
+                    t0.elapsed().as_millis(),
                     self.sr,
                     t_audio,
                     self.proc_delay
