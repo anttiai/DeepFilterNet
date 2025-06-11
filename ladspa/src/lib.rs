@@ -428,6 +428,11 @@ impl Plugin for DfPlugin {
                     break 'outer;
                 }
             }
+            log::warn!(
+                "DF {} | Sleep {}",
+                self.id,
+                self.sleep_duration.as_millis()
+            );
             sleep(self.sleep_duration);
         }
 
