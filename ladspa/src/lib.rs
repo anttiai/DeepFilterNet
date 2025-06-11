@@ -437,11 +437,11 @@ impl Plugin for DfPlugin {
         if rtf >= 1. {
             if rtf >= 1.3 {
                 log::warn!(
-                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow, queue length: {} frames vs frame size {}",
+                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow. Frame size: {}, queue size: {}",
                     self.id,
                     rtf,
-                    self.o_rx.lock().unwrap()[0].len(),
-                    self.frame_size
+                    self.frame_size,
+                    self.o_rx.lock().unwrap()[0].len()
                 );
             }
             /*if self.proc_delay >= self.sr {
@@ -450,27 +450,7 @@ impl Plugin for DfPlugin {
                     self.id,
                 );
             }*/
-
-            // Empty the queue to avoid underruns
-            if self.proc_delay >= self.sr {
-                log::warn!(
-                    "DF {} | Processing too slow! Emptying output queue to avoid underruns.",
-                    self.id
-                );
-                let mut o_q = self.o_rx.lock().unwrap();
-                for o_q_ch in o_q.iter_mut() {
-                    while o_q_ch.len() > self.frame_size {
-                        o_q_ch.pop_front().unwrap();
-                    }
-                }
-                log::warn!(
-                    "DF {} | Output queue emptied. Processing latency: {:.1}ms",
-                    self.id,
-                    self.proc_delay as f32 * 1000. / self.sr as f32
-                );
-            }
-
-            //self.proc_delay += self.frame_size;
+            self.proc_delay += self.frame_size;
             self.t_proc_change = 0;
             /*log::warn!(
                 "DF {} | Increasing processing latency to {:.1}ms",
