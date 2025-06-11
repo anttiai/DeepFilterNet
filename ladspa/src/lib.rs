@@ -453,8 +453,40 @@ impl Plugin for DfPlugin {
                     self.id,
                 );
             }*/
-            //self.proc_delay += self.frame_size;
-            self.t_proc_change = 0;
+
+            if self.proc_delay >= self.sr {
+                let dropped_samples = {
+                    let o_q = &mut self.o_rx.lock().unwrap();
+                    if o_q[0].len() < self.frame_size {
+                        false
+                    } else {
+                        for o_q_ch in o_q.iter_mut().take(self.frame_size) {
+                            o_q_ch.pop_front().unwrap();
+                            log::warn!(
+                                "DF {} | Dropped frame!",
+                                self.id
+                            );
+                        }
+                        true
+                    }
+                };
+                if dropped_samples {
+                    self.proc_delay -= self.frame_size;
+                    self.t_proc_change = 0;
+                    log::info!(
+                        "DF {} | Decreasing processing latency to {:.1}ms",
+                        self.id,
+                        self.proc_delay as f32 * 1000. / self.sr as f32
+                    );
+                }
+            }
+
+            else {
+                self.proc_delay += self.frame_size;
+                self.t_proc_change = 0;
+            }
+
+
             /*log::warn!(
                 "DF {} | Increasing processing latency to {:.1}ms",
                 self.id,
