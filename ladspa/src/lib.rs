@@ -428,11 +428,6 @@ impl Plugin for DfPlugin {
                     break 'outer;
                 }
             }
-            log::warn!(
-                "DF {} | Sleep {}",
-                self.id,
-                self.sleep_duration.as_millis()
-            );
             sleep(self.sleep_duration);
         }
 
@@ -442,11 +437,13 @@ impl Plugin for DfPlugin {
         if rtf >= 1. {
             if rtf >= 1.3 {
                 log::warn!(
-                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow. Frame size: {}, queue size: {}",
+                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow. td = {:.1}ms, sample_count = {}, sr = {}, t_audio = {}, proc_delay = {}",
                     self.id,
                     rtf,
-                    self.frame_size,
-                    self.o_rx.lock().unwrap()[0].len()
+                    ts.as_millis_f32(),
+                    self.sr,
+                    t_audio,
+                    self.proc_delay
                 );
             }
             /*if self.proc_delay >= self.sr {
