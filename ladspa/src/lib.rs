@@ -485,13 +485,17 @@ impl Plugin for DfPlugin {
             else {
                 self.proc_delay += self.frame_size;
                 self.t_proc_change = 0;
+                for o_ch in self.o_rx.lock().unwrap().iter_mut() {
+                    for _ in 0..self.frame_size {
+                        o_ch.push_back(0f32)
+                    }
+                }
                 log::info!(
                     "DF {} | Increasing processing latency to {:.1}ms",
                     self.id,
                     self.proc_delay as f32 * 1000. / self.sr as f32
                 );
             }
-
 
             /*log::warn!(
                 "DF {} | Increasing processing latency to {:.1}ms",
