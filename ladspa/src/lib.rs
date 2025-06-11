@@ -442,24 +442,33 @@ impl Plugin for DfPlugin {
                     rtf
                 );
             }
-            /*if self.proc_delay >= self.sr {
-                panic!(
-                    "DF {} | Processing too slow! Please upgrade your CPU. Try to decrease 'Max DF processing threshold (dB)'.",
-                    self.id,
-                );
-            }*/
-            self.proc_delay += self.frame_size;
+
+            //self.proc_delay += self.frame_size;
             self.t_proc_change = 0;
-            /*log::warn!(
-                "DF {} | Increasing processing latency to {:.1}ms",
-                self.id,
-                self.proc_delay as f32 * 1000. / self.sr as f32
-            );
-            for o_ch in self.o_rx.lock().unwrap().iter_mut() {
-                for _ in 0..self.frame_size {
-                    o_ch.push_back(0f32)
+
+            let dropped = {
+                let o_q = &mut self.o_rx.lock().unwrap();
+                if o_q[0].len() >= self.frame_size {
+                    for o_ch in o_q.iter_mut() {
+                        for _ in 0..self.frame_size {
+                            o_ch.pop_front(); // Drop oldest samples
+                        }
+                    }
+                    true
+                } else {
+                    false
                 }
-            }*/
+            };
+            if dropped {
+                log::warn!(
+                    "DF {} | Dropped {} samples to recover from underrun (RTF: {:.2})",
+                    self.id,
+                    self.frame_size,
+                    rtf
+                );
+            }
+
+
         } else if self.t_proc_change > 10 * self.sr / self.frame_size
             && rtf < 0.5
             && self.proc_delay
