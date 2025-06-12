@@ -374,7 +374,7 @@ impl Plugin for DfPlugin {
                     }
                     log::error!("{} | Joining dbus thread timed out.", self.id);
                 }
-            }dr
+            }
         }
     }
     fn run<'a>(&mut self, sample_count: usize, ports: &[&'a PortConnection<'a>]) {
@@ -387,23 +387,10 @@ impl Plugin for DfPlugin {
             inputs.push(ports[i].unwrap_audio());
             i += 1;
         }
-        log::warn!(
-            "DF {} | time 1 {}",
-            self.id,
-            t0.elapsed().as_millis()
-        );
-
-
         for _ in 0..self.ch {
             outputs.push(ports[i].unwrap_audio_mut());
             i += 1;
         }
-        log::warn!(
-            "DF {} | time 2 {}",
-            self.id,
-            t0.elapsed().as_millis()
-        );
-
         for p in ports[i..].iter() {
             let &v = p.unwrap_control();
             let c = DfControl::from_port_name(p.port.name);
@@ -419,11 +406,6 @@ impl Plugin for DfPlugin {
                 self.control_tx.send((c, v)).expect("Failed to send control parameter");
             }
         }
-        log::warn!(
-            "DF {} | time 3 {}",
-            self.id,
-            t0.elapsed().as_millis()
-        );
 
         {
             let i_q = &mut self.i_tx.lock().unwrap();
@@ -433,12 +415,6 @@ impl Plugin for DfPlugin {
                 }
             }
         }
-
-        log::warn!(
-            "DF {} | time 4 {}",
-            self.id,
-            t0.elapsed().as_millis()
-        );
 
         'outer: loop {
             {
@@ -461,10 +437,9 @@ impl Plugin for DfPlugin {
         if rtf >= 1. {
             if rtf >= 1.3 {
                 log::warn!(
-                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow, time {}",
+                    "DF {} | Underrun detected (RTF: {:.2}). Processing too slow!",
                     self.id,
-                    rtf,
-                    td.as_millis()
+                    rtf
                 );
             }
             /*if self.proc_delay >= self.sr {
@@ -473,19 +448,19 @@ impl Plugin for DfPlugin {
                     self.id,
                 );
             }*/
-            self.proc_delay += self.frame_size;
-            self.t_proc_change = 0;
+            //self.proc_delay += self.frame_size;
+            //self.t_proc_change = 0;
             /*log::warn!(
                 "DF {} | Increasing processing latency to {:.1}ms",
                 self.id,
                 self.proc_delay as f32 * 1000. / self.sr as f32
-            );*/
+            );
             for o_ch in self.o_rx.lock().unwrap().iter_mut() {
                 for _ in 0..self.frame_size {
                     o_ch.push_back(0f32)
                 }
-            }
-        } else if self.t_proc_change > 10 * self.sr / self.frame_size
+            }*/
+        } /*else if self.t_proc_change > 10 * self.sr / self.frame_size
             && rtf < 0.5
             && self.proc_delay
                 >= self.frame_size * (1 + self.control_hist.min_buffer_frames as usize)
@@ -516,7 +491,7 @@ impl Plugin for DfPlugin {
                 );
             }
         }
-        self.t_proc_change += 1;
+        self.t_proc_change += 1;*/
     }
 }
 
